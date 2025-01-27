@@ -20,7 +20,6 @@ class RegistrationRequest(BaseModel):
 
     @field_validator("phone")
     def validate_phone_number(cls, phone_number: str):
-        print("Validated phone number:", phone_number)
         if len(phone_number) != 10:
             raise ValueError("Phone number is not valid!")
         return phone_number
@@ -38,7 +37,6 @@ class LoginRequest(BaseModel):
 
     @field_validator("password")
     def validate_password(cls, password: str):
-        print("Password used by validator:", password)
         if len(password) < 6:
             raise ValueError("Password must be 6 characters long")
         return password

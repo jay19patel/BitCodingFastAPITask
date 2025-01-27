@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 # Custom Modules
 from app.database.db import init_db
 from app.routes.authRoutes import auth_rout
+from app.routes.classRoutes import class_rout
 @asynccontextmanager
 async def connectingTodb(app: FastAPI):
     await init_db()
@@ -22,3 +23,4 @@ app = FastAPI(
 
 
 app.include_router(auth_rout,prefix="/auth",tags=["User Login and Registartion"])
+app.include_router(class_rout,prefix="/classroom",tags=["Class and Meetings"])

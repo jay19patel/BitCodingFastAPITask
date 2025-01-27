@@ -60,7 +60,7 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
         )
 
 @auth_rout.post("/recreate_token", status_code=status.HTTP_200_OK)
-async def user(user:User= Depends(get_login_user)):
+async def recreate_token(user:User= Depends(get_login_user)):
     token = create_access_token(data={"email":user.email})
     return JSONResponse(
             content={"message": "generate new Token successful", 
@@ -69,4 +69,3 @@ async def user(user:User= Depends(get_login_user)):
                     },
             status_code=status.HTTP_200_OK
         )
-
