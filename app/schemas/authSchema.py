@@ -10,15 +10,15 @@ from pydantic import BaseModel, field_validator,EmailStr
 from app.models.models import Role
 
 class RegistrationRequest(BaseModel):
-    first_name: str
-    last_name: str
-    email:EmailStr
-    phone_number: str
-    age:float
-    role:Role
-    password: str
+    first_name: str = "Jay"
+    last_name: str = "Patel"
+    email:EmailStr = "jay@gmail.com"
+    phone: str = "7069668308"
+    age:float = 24
+    role:Role = Role.TEACHER
+    password: str = "123456"
 
-    @field_validator("phone_number")
+    @field_validator("phone")
     def validate_phone_number(cls, phone_number: str):
         print("Validated phone number:", phone_number)
         if len(phone_number) != 10:
@@ -33,8 +33,8 @@ class RegistrationRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    username: str
-    password: str
+    email: str = "jay@gmail.com"
+    password: str = "123456"
 
     @field_validator("password")
     def validate_password(cls, password: str):

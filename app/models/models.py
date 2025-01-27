@@ -9,15 +9,15 @@ Managing all models:
     - create_user
 """
 
-from sqlalchemy import Column, String, Integer, DateTime, func, Enum as sqlEnum, ForeignKey,Boolean,Time
+from sqlalchemy import Column, String, Integer, DateTime, func, Enum as sqlEnum, ForeignKey,Boolean,Time,select
 from sqlalchemy.orm import relationship, validates
 from enum import Enum
 from passlib.context import CryptContext
 from datetime import datetime
-
+from pydantic import EmailStr
+from sqlalchemy.ext.asyncio import AsyncSession
 # Custom modules
-from app.database.db import Base
-
+from app.database.db import Base,get_db 
 class Role(Enum):
     """User roles"""
     STUDENT = 'Student'
@@ -52,9 +52,6 @@ class User(Base):
     password = Column(String, nullable=False)
     role = Column(sqlEnum(Role), default=Role.STUDENT, nullable=False)
     created_datetime = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    
-    # Relationships
-    classes = relationship("Classroom", back_populates="users")
 
     @classmethod
     def hash_password(cls, password: str) -> str:
@@ -66,8 +63,17 @@ class User(Base):
         return pwd_context.verify(password, self.password)
 
     @classmethod
-    def create_user(cls, first_name: str, last_name: str, email: str, password: str, role: Role = Role.STUDENT):
+    def create_user(cls, first_name: str, last_name: str, email: str, phone: str, age: float, password: str, role: Role = Role.STUDENT):
         """Create a new user with password security."""
         hashed_password = cls.hash_password(password)
-        user = cls(first_name=first_name, last_name=last_name, email=email, password=hashed_password, role=role)
+        user = cls(first_name=first_name, last_name=last_name, email=email, phone=phone, password=hashed_password, role=role)
         return user
+
+    @classmethod
+    async def user_get_by_email(cls, email: EmailStr, db: AsyncSession):
+        """Find user by email ID."""
+        query = select(cls).where(cls.email == email)
+        result = await db.execute(query)
+        if not result:
+            return False
+        return result.scalars().first()
